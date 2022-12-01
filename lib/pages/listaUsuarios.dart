@@ -39,15 +39,17 @@ class _ListaUser extends State<ListaUser> {
                     itemCount: snapshot.data!.length,
                     itemBuilder: (context, index) {
                       Usuarios usuario = snapshot.data![index];
-                      id = usuario.id!;
                       return ListTile(
                         title: Text(usuario.nome!),
                         onTap: () {
                           Navigator.push(
-                            context,
-                            new MaterialPageRoute(
-                                builder: (context) => DetalheUser()),
-                          );
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) => DetalheUser(),
+                                settings: RouteSettings(
+                                  arguments: usuario.id,
+                                ),
+                              ));
                         },
                         //subtitle: Text(usuario.id!),
                       );
@@ -62,9 +64,6 @@ class _ListaUser extends State<ListaUser> {
   }
 
   Future<List<Usuarios>> Coletauser() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setInt('key', id);
-    
     var url = Uri.parse('https://www.slmm.com.br/CTC/getLista.php');
     var response = await http.get(url);
     if (response.statusCode == 200) {

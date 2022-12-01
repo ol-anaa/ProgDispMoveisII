@@ -4,9 +4,13 @@ import 'package:http/http.dart' as http;
 import 'dart:convert';
 
 import '../Services/DadosUser.dart';
+import '../Services/Usuario.dart';
+import 'package:trabalho_final/pages/qrcode.dart';
+
 
 class DetalheUser extends StatefulWidget {
-  const DetalheUser({Key? key}) : super(key: key);
+  final int? id;
+  DetalheUser({Key? key, this.id}) : super(key: key);
 
   @override
   State<DetalheUser> createState() => _DetalheUser();
@@ -14,15 +18,18 @@ class DetalheUser extends StatefulWidget {
 
 class _DetalheUser extends State<DetalheUser> {
   late Future<List<DadosUser>> dadosUser;
-
+  int? id;
+ 
   @override
   void initState() {
-    super.initState();
-    dadosUser = DadosReceb();
+    super.initState();     
   }
 
   @override
   Widget build(BuildContext context) {
+    final usuario = ModalRoute.of(context)?.settings.arguments;
+    id = usuario as int?; 
+    dadosUser = DadosReceb();  
     return Scaffold(
       appBar: AppBar(
         title: Text("Dados específicos do usuário"),
@@ -31,7 +38,7 @@ class _DetalheUser extends State<DetalheUser> {
         children: <Widget>[
           Center(
             child: Padding(
-              padding: const EdgeInsets.fromLTRB(125, 250, 0, 40),
+              padding: const EdgeInsets.fromLTRB(115, 250, 0, 40),
               child: FutureBuilder<List<DadosUser>>(
                 future: dadosUser,
                 builder: (context, snapshot) {
@@ -71,14 +78,7 @@ class _DetalheUser extends State<DetalheUser> {
                   style: TextStyle(color: Colors.white),
                 ),
               ),
-              onPressed: () {
-                Navigator.push(
-                  context,
-                  MaterialPageRoute(
-                    builder: (context) => deletar(),
-                  ),
-                );
-              },
+              onPressed: () => deletar(),
             ),
           ),
         ],
@@ -87,24 +87,24 @@ class _DetalheUser extends State<DetalheUser> {
   }
 
   deletar() async {
-    final prefs = await SharedPreferences.getInstance();
-    final id = prefs.getInt('key') ?? 0;
-
     var url = Uri.parse('https://www.slmm.com.br/CTC/delete.php?id=${id}');
     var response = await http.delete(url);
     if (response.statusCode == 200) {
-      List listaUsuario = json.decode(response.body);
-      return listaUsuario.map((e) => DadosUser.fromJson(e)).toList();
-    } else {
-      throw Exception('Não foi possível carregar os usuários!');
+      ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Usuário deletado com sucesso!"),
+      ));
+
+      Navigator.push(
+        context,
+        MaterialPageRoute(
+          builder: (BuildContext context) => QRCodePage(),
+        ),
+      );
     }
   }
 
   Future<List<DadosUser>> DadosReceb() async {
-    final prefs = await SharedPreferences.getInstance();
-    final id = prefs.getInt('key') ?? 0;
-
-    var url = Uri.parse('https://www.slmm.com.br/CTC/getDetalhe.php?id=15');
+    var url = Uri.parse('https://www.slmm.com.br/CTC/getDetalhe.php?id=${id}');
     var response = await http.get(url);
     if (response.statusCode == 200) {
       List listaUsuario = json.decode(response.body);
