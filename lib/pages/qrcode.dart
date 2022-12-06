@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_barcode_scanner/flutter_barcode_scanner.dart';
+
 import 'package:trabalho_final/pages/cadastro.dart';
 import 'package:trabalho_final/pages/listaUsuarios.dart';
 
@@ -11,9 +12,11 @@ class QRCodePage extends StatefulWidget {
 }
 
 class _QRCodePageState extends State<QRCodePage> {
-  String ticket = '';
+  String link = ''; //String que vai receber o link escaneado
+  //Controller que pega o link digitado caso o QRCode não funcione 
   final TextEditingController _controllerLink = TextEditingController();
 
+  //Função que le o QRCode
   readQRCode() async {
     String code = await FlutterBarcodeScanner.scanBarcode(
       "#FFFFFF",
@@ -21,7 +24,35 @@ class _QRCodePageState extends State<QRCodePage> {
       false,
       ScanMode.QR,
     );
-    setState(() => ticket = code != '-1' ? code : 'Não validado');
+    setState(() => link = code != '-1' ? code : 'Não validado');
+
+    //Se o link for o de listar os usuário, vai para página de listar usuários
+    if (link == 'https://www.slmm.com.br/CTC/getLista.php'){
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => ListaUser()),
+      );
+    }
+    //Se o linl for de inserir vai para página de inserir 
+    else if (link == 'https://www.slmm.com.br/CTC/insere.php'){
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => CadastrarUser()),
+      );
+    }
+    //Se o usuário clicar em cnscelar volta para página inicial de escanear QRCode
+    else if (link == 'cancelar') {
+      Navigator.push(
+        context,
+        MaterialPageRoute(builder: (context) => QRCodePage()),
+      );
+    }
+    //Se nada funcionar, fala que a url não foi encontrada
+    else {
+       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+        content: Text("Url não encontrada"),
+      ));
+    }
   }
 
   @override
@@ -34,24 +65,20 @@ class _QRCodePageState extends State<QRCodePage> {
           mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
-            if (ticket == 'https://www.slmm.com.br/CTC/getLista.php')
-              Padding(
-                padding: const EdgeInsets.only(bottom: 24.0),
-                child: NavegarLista(),
-              ),
-            if (ticket == 'https://www.slmm.com.br/CTC/insere.php')
-              Padding(
-                padding: const EdgeInsets.only(bottom: 24.0),
-                child: InserirLista(),
-              ),
+            //Monta o botão que vai chamar o função de escanear 
             ElevatedButton.icon(
               onPressed: readQRCode,
+              style: ElevatedButton.styleFrom(
+                backgroundColor: Color(0xFF4065C3) //define cor
+              ),
               icon: const Icon(Icons.qr_code),
-              label: const Text('Validar QRCode'),
+              label: const Text('Validar QRCode',
+               style: TextStyle(fontSize: 20),),
             ),
             const SizedBox(
-              height: 30,
+              height: 40,
             ),
+            //Caso não seja possível escanear o QRCode
             Text("Caso não seja possível a leitura do QRCode, digite: ",
                 style: const TextStyle(
                   fontSize: 15,
@@ -60,6 +87,7 @@ class _QRCodePageState extends State<QRCodePage> {
             const SizedBox(
               height: 20,
             ),
+            //Controller que recebe o link de onde o usuário quer ir
             TextFormField(
               controller: _controllerLink,
               autofocus: true,
@@ -74,25 +102,22 @@ class _QRCodePageState extends State<QRCodePage> {
               ),
               style: const TextStyle(fontSize: 20),
             ),
-
+            //Forma o botão que chama a função que valida o link
             Container(
               margin: (const EdgeInsets.only(top: 30, left: 25, right: 25)),
-              height: 55,
-              width: 150,
+              height: 40,
+              width: 120,
               decoration: const BoxDecoration(
                 color: Color(0xFF4065C3),
-                borderRadius: BorderRadius.all(
-                  Radius.circular(20),
-                ),
               ),
               child: TextButton(
                 child: const Center(
                   child: Text(
                     'Enviar',
-                    style: TextStyle(color: Colors.white, fontSize: 25),
+                    style: TextStyle(color: Colors.white, fontSize: 20),
                   ),
                 ),
-                onPressed: () => ValidarLink(),
+                onPressed: () => ValidarLink(), //Chama a função
               ),
             ),
           ],
@@ -102,34 +127,25 @@ class _QRCodePageState extends State<QRCodePage> {
   }
 
   ValidarLink() {
+    //Se o link digitado for o de listar os usuário vai para página de lista
     if (_controllerLink.text == 'https://www.slmm.com.br/CTC/getLista.php') {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => ListaUser()),
       );
-    } else if (_controllerLink.text == 'https://www.slmm.com.br/CTC/insere.php') {
+    } 
+    //Se o link for o de inserir vai para página de inserir usuários
+    else if (_controllerLink.text == 'https://www.slmm.com.br/CTC/insere.php') {
       Navigator.push(
         context,
         MaterialPageRoute(builder: (context) => CadastrarUser()),
       );
-    } else {
+    } 
+    //Se nenhum desses dois links forem passados, manda uma mensagem que o link é inválido
+    else {
       ScaffoldMessenger.of(context).showSnackBar(SnackBar(
         content: Text("Link inválido"),
       ));
     }
-  }
-
-  NavegarLista() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => ListaUser()),
-    );
-  }
-
-  InserirLista() {
-    Navigator.push(
-      context,
-      MaterialPageRoute(builder: (context) => CadastrarUser()),
-    );
   }
 }
