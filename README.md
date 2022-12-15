@@ -1,16 +1,27 @@
-# trabalho_final
+<h1> Lista de Espera em flutter + API 📱 </h1>
 
-A new Flutter project.
+Trabalho de Programação de Dispositivos Móveis II - COTUCA
 
-## Getting Started
+<hr/>
+<h3>Autores:</h3>
 
-This project is a starting point for a Flutter application.
-
-A few resources to get you started if this is your first Flutter project:
-
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+<table>
+  <tr>
+    <td align="center">
+      <a href="https://github.com/Adriysun">
+        <img src="https://avatars.githubusercontent.com/u/105469229?v=4" width="100px;" alt="Adriysun"/><br>
+        <sub>
+          <b>Adriysun</b>
+        </sub>
+      </a>
+      <br>
+     <td align="center">
+      <a href="https://github.com/ol-anaa">
+        <img src="https://avatars.githubusercontent.com/u/105469302?v=4" width="100px;" alt="ol-anaa"/><br>
+        <sub>
+          <b>ol-anaa</b>
+        </sub>
+      </a>
+    </td>
+   </tr>
+  </table>
